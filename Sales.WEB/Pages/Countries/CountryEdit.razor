@@ -52,13 +52,13 @@ else
         }
         else
         {
-            countryForm!.FormPostedSuccessfully = true;
-            navigationManager.NavigateTo("countries");
+            Return();
         }
     }
 
     private void Return()
     {
+        countryForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo("countries");
     }
 
