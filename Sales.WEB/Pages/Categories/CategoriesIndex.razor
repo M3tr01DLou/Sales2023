@@ -6,7 +6,7 @@
 <h3>Categorías</h3>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="/categories/create">Nuevo Categoría</a>
+    <a class="btn btn-primary" href="/category/create">Nuevo Categoría</a>
 </div>
 
 
@@ -30,7 +30,7 @@
                 {
                     <tr>
                         <td>
-                            <a href="/categories/edit/@category.Id" class="btn btn-warning">Editar</a>
+                            <a href="/category/edit/@category.Id" class="btn btn-warning">Editar</a>
                             <button class="btn btn-danger" @onclick=@(() => DeleteAsync(category))>Borrar</button>
                         </td>
                         <td>
