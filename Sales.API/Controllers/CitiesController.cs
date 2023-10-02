@@ -6,12 +6,12 @@ using Sales.Shared.Entities;
 namespace Sales.API.Controllers
 {
     [ApiController]
-    [Route("api/countries")]
-    public class CountriesController : ControllerBase
+    [Route("api/cities")]
+    public class CitiesController : ControllerBase
     {
         private readonly DataContext _dataContext;
 
-        public CountriesController(DataContext dataContext)
+        public CitiesController(DataContext dataContext)
         {
             _dataContext = dataContext;
         }
@@ -19,35 +19,35 @@ namespace Sales.API.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAsync()
         {
-            return Ok(await _dataContext.Countries.Include(s => s.States).ToListAsync());
+            return Ok(await _dataContext.Cities.ToListAsync());
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult> GetAsync(int id)
         {
-            var country = await _dataContext.Countries.Include(s => s.States).ThenInclude(c => c.Cities).FirstOrDefaultAsync(x => x.Id == id);
-            if (country is null)
+            var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == id);
+            if (city is null)
             {
                 return NotFound();
             }
 
-            return Ok(country);
+            return Ok(city);
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync(Country country)
+        public async Task<ActionResult> PostAsync(City city)
         {
             try
             {
-                _dataContext.Add(country);
+                _dataContext.Add(city);
                 await _dataContext.SaveChangesAsync();
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
-                if (dbUpdateException.InnerException!.Message.Contains("IX_Countries_Name"))
+                if (dbUpdateException.InnerException!.Message.Contains("IX_Cities_Name"))
                 {
-                    return BadRequest($"El país {country.Name} ya existe en la base de datos.");
+                    return BadRequest($"La ciudad {city.Name} ya existe en la base de datos.");
                 }
                 else
                 {
@@ -62,19 +62,19 @@ namespace Sales.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync(Country country)
+        public async Task<ActionResult> PutAsync(City city)
         {
             try
             {
-                _dataContext.Update(country);
+                _dataContext.Update(city);
                 await _dataContext.SaveChangesAsync();
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
-                if (dbUpdateException.InnerException!.Message.Contains("IX_Countries_Name"))
+                if (dbUpdateException.InnerException!.Message.Contains("IX_Cities_Name"))
                 {
-                    return BadRequest($"El país {country.Name} ya existe en la base de datos.");
+                    return BadRequest($"La ciudad {city.Name} ya existe en la base de datos.");
                 }
                 else
                 {
@@ -90,13 +90,13 @@ namespace Sales.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var country = await _dataContext.Countries.FirstOrDefaultAsync(x => x.Id == id);
-            if (country == null)
+            var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == id);
+            if (city == null)
             {
                 return NotFound();
             }
 
-            _dataContext.Remove(country);
+            _dataContext.Remove(city);
             await _dataContext.SaveChangesAsync();
             return NoContent();
         }
