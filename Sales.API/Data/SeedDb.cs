@@ -1,15 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sales.API.Helpers;
 using Sales.Shared.Entities;
+using Sales.Shared.Enums;
 
 namespace Sales.API.Data
 {
     public class SeedDb
     {
         private readonly DataContext _dataContext;
+        private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext dataContext)
+        public SeedDb(DataContext dataContext, IUserHelper userHelper)
         {
             _dataContext = dataContext;
+            _userHelper = userHelper;
         }
 
         public async Task SeedAsync()
@@ -17,6 +21,39 @@ namespace Sales.API.Data
             await _dataContext.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
             await CheckCategoriesAsync();
+            await CheckRolesAsync();
+            await CheckUserAsync("1010", "Lou", "Gonzalez", "lou@yopmail.com", "322 311 4620", "Calle Luna Calle Sol", UserType.Admin);
+        }
+
+        private async Task<User> CheckUserAsync(string document, string firstName, string lastName, string email, string phone, string address, UserType userType)
+        {
+            var user = await _userHelper.GetUserAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    UserName = email,
+                    PhoneNumber = phone,
+                    Address = address,
+                    Documento = document,
+                    City = _dataContext.Cities.FirstOrDefault(),
+                    UserType = userType,
+                };
+
+                await _userHelper.AddUserAsync(user, "123456");
+                await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+            }
+
+            return user;
+        }
+
+        private async Task CheckRolesAsync()
+        {
+            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
+            await _userHelper.CheckRoleAsync(UserType.User.ToString());
         }
 
         private async Task CheckCategoriesAsync()
@@ -25,7 +62,7 @@ namespace Sales.API.Data
             {
                 _dataContext.Categories.Add(new Category { Name = "Apple" });
                 _dataContext.Categories.Add(new Category { Name = "Calzado" });
-                _dataContext.Categories.Add(new Category { Name = "informática" });
+                _dataContext.Categories.Add(new Category { Name = "Informática" });
                 _dataContext.Categories.Add(new Category { Name = "Hogar" });
                 _dataContext.Categories.Add(new Category { Name = "Automovil" });
             }

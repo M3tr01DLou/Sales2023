@@ -45,7 +45,7 @@ namespace Sales.API.Controllers
             }
             catch (DbUpdateException dbUpdateException)
             {
-                if (dbUpdateException.InnerException!.Message.Contains("IX_Categories_Name"))
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
                     return BadRequest($"La categoría {category.Name} ya existe en la base de datos.");
                 }
@@ -72,7 +72,7 @@ namespace Sales.API.Controllers
             }
             catch (DbUpdateException dbUpdateException)
             {
-                if (dbUpdateException.InnerException!.Message.Contains("IX_Categories_Name"))
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
                 {
                     return BadRequest($"La categoría {category.Name} ya existe en la base de datos.");
                 }
